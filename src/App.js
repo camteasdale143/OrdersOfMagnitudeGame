@@ -7,7 +7,7 @@ function App() {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [minMagnitude, setMinMagnitude] = useState(0); // State for minimum magnitude
   const [maxMagnitude, setMaxMagnitude] = useState(5); // State for maximum magnitude
-  const [isDarkMode, setIsDarkMode] = useState(true); // State for dark mode
+  const isDarkMode = true
 
   const startGame = (min, max) => {
     setMinMagnitude(min);
