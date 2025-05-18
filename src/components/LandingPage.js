@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 function LandingPage({ startGame }) {
   const [minMagnitude, setMinMagnitude] = useState(0);
-  const [maxMagnitude, setMaxMagnitude] = useState(12);
+  const [maxMagnitude, setMaxMagnitude] = useState(9);
 
   const handleStartGame = () => {
     startGame(minMagnitude, maxMagnitude);
@@ -15,7 +15,7 @@ function LandingPage({ startGame }) {
 
       <div>
         <h3>Select Minimum Order of Magnitude:</h3>
-        {[0, 3, 6, 9].map((magnitude) => (
+        {[0, 3, 6].map((magnitude) => (
           <label key={magnitude}>
             <input
               type="radio"
@@ -30,7 +30,7 @@ function LandingPage({ startGame }) {
 
       <div>
         <h3>Select Maximum Order of Magnitude:</h3>
-        {[3, 6, 9, 12].map((magnitude) => (
+        {[3, 6, 9].map((magnitude) => (
           <label key={magnitude}>
             <input
               type="radio"

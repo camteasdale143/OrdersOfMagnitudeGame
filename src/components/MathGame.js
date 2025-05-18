@@ -73,7 +73,7 @@ function MathGame({ endGame, minMagnitude, maxMagnitude }) {
   // Start game and generate first question on mount
   useEffect(() => {
     generateQuestion();
-  }, [generateQuestion]);
+  }, []);
 
   // Handle user input
   const handleInputChange = (event) => {
@@ -86,7 +86,7 @@ function MathGame({ endGame, minMagnitude, maxMagnitude }) {
     const cleanedInput = input.trim().toLowerCase();
 
     // Regex to match number followed by optional space and magnitude suffix (m, b, t, q)
-    const match = cleanedInput.match(/^(\d+(\.\d+)?)\s*([mbtq])?$/);
+    const match = cleanedInput.match(/^(\d+(\.\d+)?)\s*([kmbtq])?$/);
 
     if (!match) {
       // If no match, try converting directly to a number (for inputs without suffixes)
@@ -103,6 +103,9 @@ function MathGame({ endGame, minMagnitude, maxMagnitude }) {
 
     let multiplier = 1;
     switch (suffix) {
+      case 'k':
+        multiplier = 1_000;
+        break;
       case 'm':
         multiplier = 1_000_000;
         break;
@@ -170,6 +173,7 @@ function MathGame({ endGame, minMagnitude, maxMagnitude }) {
             disabled={!isGameActive}
           />
           <button onClick={checkAnswer} disabled={!isGameActive}>Submit Answer</button>
+        <p>Tip: Use Magnitude suffixes: k (thousand), m (million), b (billion), t (trillion)</p>
         </div>
       ) : (
         <div>
