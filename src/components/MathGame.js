@@ -73,7 +73,7 @@ function MathGame({ endGame, minMagnitude, maxMagnitude }) {
   // Start game and generate first question on mount
   useEffect(() => {
     generateQuestion();
-  }, []);
+  }, [generateQuestion]);
 
   // Handle user input
   const handleInputChange = (event) => {

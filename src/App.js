@@ -19,15 +19,8 @@ function App() {
     setIsGameStarted(false);
   };
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
   return (
     <div className={`App ${isDarkMode ? 'dark-mode' : 'light-mode'}`}> {/* Apply dark-mode class */}
-      {/* <button onClick={toggleDarkMode} className="mode-toggle-button">
-        {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-      </button> */}
       {isGameStarted ? (
         <MathGame endGame={endGame} minMagnitude={minMagnitude} maxMagnitude={maxMagnitude} />
       ) : (
