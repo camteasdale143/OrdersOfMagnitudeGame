@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-function MathGame({ endGame }) {
+var converter = require('number-to-words');
+
+
+function MathGame({ endGame, minMagnitude, maxMagnitude }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [score, setScore] = useState(0);
@@ -8,12 +11,19 @@ function MathGame({ endGame }) {
   const [isGameActive, setIsGameActive] = useState(true);
   const [correctAnswer, setCorrectAnswer] = useState(null);
 
+  const numberToWords= (num) => {
+    return converter.toWords(num)
+  };
+
   // Function to generate a new question
   const generateQuestion = () => {
     const generateMagnitude = () => {
-      const digit = Math.floor(Math.random() * 9) + 1;
-      const power = Math.floor(Math.random() * 12); // Powers up to 10^11 (Trillions)
-      return { value: digit * Math.pow(10, power), digit: digit, power: power };
+      const digit = Math.floor(Math.random() * 10) + 1;
+      const power = Math.floor(Math.random() * (maxMagnitude - minMagnitude + 1)) + minMagnitude;
+      console.log('minMagnitude:', minMagnitude, 'maxMagnitude:', maxMagnitude, 'power:', power);
+      const value = digit * Math.pow(10, power);
+      console.log('Generated value:', value);
+      return { value: value, digit: digit, power: power };
     };
 
     let val1Obj = generateMagnitude();
@@ -24,18 +34,22 @@ function MathGame({ endGame }) {
     let calculatedAnswer;
 
     if (operator === '*') {
-      questionString = `${val1Obj.value} * ${val2Obj.value}`;
+      questionString = `${numberToWords(val1Obj.value)} * ${numberToWords(val2Obj.value)}`;
       calculatedAnswer = val1Obj.value * val2Obj.value;
     } else {
-      // Ensure division results in a whole number
-      // Make the first number a multiple of the second number's base digit and power of 10
-      const resultPower = Math.floor(Math.random() * 10); // Result power up to 10^9
+      // Ensure division results in a whole number and manageable magnitude
+      // Generate a result magnitude first, then calculate the dividend
+      const resultPower = Math.floor(Math.random() * (maxMagnitude - minMagnitude + 1)) + minMagnitude;
       const resultDigit = Math.floor(Math.random() * 9) + 1;
       calculatedAnswer = resultDigit * Math.pow(10, resultPower);
 
-      // To get a whole number result, the dividend must be the product of the divisor and the desired result
-      const dividend = val2Obj.value * calculatedAnswer;
-      questionString = `${dividend} / ${val2Obj.value}`;
+      // Calculate the dividend based on the divisor and the desired result
+      let dividend = val2Obj.value * calculatedAnswer;
+
+      console.log(dividend)
+      console.log(val2Obj.value)
+
+      questionString = `${numberToWords(dividend)} / ${numberToWords(val2Obj.value)}`;
     }
 
     setQuestion(questionString);
@@ -67,11 +81,62 @@ function MathGame({ endGame }) {
   };
 
   // Check answer
-  const checkAnswer = () => {
-    // Convert user input to a number for comparison
-    const userAnswerNum = Number(answer);
+  const parseMagnitudeInput = (input) => {
+    // Remove leading/trailing spaces and convert to lowercase for easier parsing
+    const cleanedInput = input.trim().toLowerCase();
 
-    if (!isNaN(userAnswerNum) && userAnswerNum === correctAnswer) {
+    // Regex to match number followed by optional space and magnitude suffix (m, b, t, q)
+    const match = cleanedInput.match(/^(\d+(\.\d+)?)\s*([mbtq])?$/);
+
+    if (!match) {
+      // If no match, try converting directly to a number (for inputs without suffixes)
+      const num = Number(cleanedInput);
+      return isNaN(num) ? NaN : num;
+    }
+
+    const numberPart = parseFloat(match[1]);
+    const suffix = match[3]; // m, b, t, or q
+
+    if (isNaN(numberPart)) {
+      return NaN; // Should not happen with the regex, but good practice
+    }
+
+    let multiplier = 1;
+    switch (suffix) {
+      case 'm':
+        multiplier = 1_000_000;
+        break;
+      case 'b':
+        multiplier = 1_000_000_000;
+        break;
+      case 't':
+        multiplier = 1_000_000_000_000;
+        break;
+      case 'q': // Assuming 'q' for quadrillion
+        multiplier = 1_000_000_000_000_000;
+        break;
+      default:
+        // No suffix, use the number part directly
+        return numberPart;
+    }
+
+    console.log(multiplier)
+    console.log(numberPart)
+
+    return numberPart * multiplier;
+  };
+
+  // Check answer
+  const checkAnswer = () => {
+    // Convert user input to a number for comparison using the new parser
+    const userAnswerNum = parseMagnitudeInput(answer);
+
+    // Allow for a small tolerance in case of floating point inaccuracies,
+    // especially with large numbers or division results.
+    // A tolerance of 1 is used here, assuming whole number answers.
+    const tolerance = 1;
+
+    if (!isNaN(userAnswerNum) && Math.abs(userAnswerNum - correctAnswer) < tolerance) {
       setScore(score + 1);
       generateQuestion(); // Generate new question on correct answer
     }
