@@ -11,8 +11,25 @@ function MathGame({ endGame, minMagnitude, maxMagnitude }) {
   const [isGameActive, setIsGameActive] = useState(true);
   const [correctAnswer, setCorrectAnswer] = useState(null);
 
+
   const numberToWords= (num) => {
-    return converter.toWords(num)
+    let multiplier_map = [
+      {"multiplier": 1_000_000_000_000_000, "unit": "Quadrillion"},
+      {"multiplier": 1_000_000_000_000, "unit": "Trillion"},
+      {"multiplier": 1_000_000_000, "unit": "Billion"},
+      {"multiplier": 1_000_000, "unit": "Million"},
+      {"multiplier": 1_000, "unit": "K"},
+    ]
+
+    let unit = ""
+
+    for (let i=0; i<multiplier_map.length; i++) {
+      let m = multiplier_map[i]
+      if (num % m["multiplier"] < num) {
+        return String(num / m["multiplier"]) + " " + m["unit"]
+      }
+    }
+    return String(num)
   };
 
   // Function to generate a new question
