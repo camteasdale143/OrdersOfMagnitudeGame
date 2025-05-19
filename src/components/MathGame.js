@@ -190,7 +190,7 @@ function MathGame({ endGame, minMagnitude, maxMagnitude }) {
             disabled={!isGameActive}
           />
           <button onClick={checkAnswer} disabled={!isGameActive}>Submit Answer</button>
-        <p>Tip: Use Magnitude suffixes: k (thousand), m (million), b (billion), t (trillion)</p>
+        <p>Tip: Use magnitude suffixes: k (thousand), m (million), b (billion), t (trillion), q (quadrillion)</p>
         </div>
       ) : (
         <div>
